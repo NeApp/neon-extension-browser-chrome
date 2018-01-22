@@ -4,6 +4,10 @@ import {ChromeWebRequestEvent} from './requestEvent';
 
 
 export class ChromeWebRequest extends WebExtensionsWebRequest {
+    static get api() {
+        return chrome.webRequest;
+    }
+
     createEvent(name) {
         return new ChromeWebRequestEvent(name);
     }
