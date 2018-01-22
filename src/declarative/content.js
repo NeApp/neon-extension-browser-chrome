@@ -9,6 +9,10 @@ import {PageStateMatcher} from './conditions';
 
 
 export class ChromeDeclarativeContent extends WebExtensionsDeclarativeContent {
+    static get api() {
+        return chrome.declarativeContent;
+    }
+
     addRules(rules) {
         let deferred = Deferred();
 
@@ -27,7 +31,7 @@ export class ChromeDeclarativeContent extends WebExtensionsDeclarativeContent {
         });
 
         // Add rules
-        chrome.declarativeContent.onPageChanged.addRules(rules, (registeredRules) => {
+        this.api.onPageChanged.addRules(rules, (registeredRules) => {
             deferred.resolve(registeredRules);
         });
 
@@ -38,7 +42,7 @@ export class ChromeDeclarativeContent extends WebExtensionsDeclarativeContent {
         let deferred = Deferred();
 
         // Remove rules
-        chrome.declarativeContent.onPageChanged.removeRules(ruleIdentifiers, () => {
+        this.api.onPageChanged.removeRules(ruleIdentifiers, () => {
             deferred.resolve();
         });
 
@@ -49,7 +53,7 @@ export class ChromeDeclarativeContent extends WebExtensionsDeclarativeContent {
         let deferred = Deferred();
 
         // Get rules
-        chrome.declarativeContent.onPageChanged.getRules(ruleIdentifiers, (rules) => {
+        this.api.onPageChanged.getRules(ruleIdentifiers, (rules) => {
             deferred.resolve([
                 ...rules.map((rule) => {
                     return {
@@ -77,7 +81,7 @@ export class ChromeDeclarativeContent extends WebExtensionsDeclarativeContent {
         }
 
         if(action instanceof RequestContentScript) {
-            return new chrome.declarativeContent.RequestContentScript({
+            return new this.api.RequestContentScript({
                 css: action.css,
                 js: action.js,
 
@@ -87,13 +91,13 @@ export class ChromeDeclarativeContent extends WebExtensionsDeclarativeContent {
         }
 
         if(action instanceof SetIcon) {
-            return new chrome.declarativeContent.SetIcon({
+            return new this.api.SetIcon({
                 imageData: action.imageData
             });
         }
 
         if(action instanceof ShowPageAction) {
-            return new chrome.declarativeContent.ShowPageAction();
+            return new this.api.ShowPageAction();
         }
 
         throw new NotImplementedError('Unsupported action: ' + action);
@@ -117,7 +121,7 @@ export class ChromeDeclarativeContent extends WebExtensionsDeclarativeContent {
                 options.isBookmarked = condition.isBookmarked;
             }
 
-            return new chrome.declarativeContent.PageStateMatcher(options);
+            return new this.api.PageStateMatcher(options);
         }
 
         throw new NotImplementedError('Unsupported condition: ' + condition);
@@ -136,7 +140,7 @@ export class ChromeDeclarativeContent extends WebExtensionsDeclarativeContent {
         }
 
         // Parse action
-        if(action instanceof chrome.declarativeContent.RequestContentScript || type === 'RequestContentScript') {
+        if(action instanceof this.api.RequestContentScript || type === 'RequestContentScript') {
             return new RequestContentScript({
                 css: action.css,
                 js: action.js,
@@ -146,13 +150,13 @@ export class ChromeDeclarativeContent extends WebExtensionsDeclarativeContent {
             });
         }
 
-        if(action instanceof chrome.declarativeContent.SetIcon || type === 'SetIcon') {
+        if(action instanceof this.api.SetIcon || type === 'SetIcon') {
             return new SetIcon({
                 imageData: action.imageData
             });
         }
 
-        if(action instanceof chrome.declarativeContent.ShowPageAction || type === 'ShowPageAction') {
+        if(action instanceof this.api.ShowPageAction || type === 'ShowPageAction') {
             return new ShowPageAction();
         }
 
@@ -172,7 +176,7 @@ export class ChromeDeclarativeContent extends WebExtensionsDeclarativeContent {
         }
 
         // Parse condition
-        if(condition instanceof chrome.declarativeContent.PageStateMatcher || type === 'PageStateMatcher') {
+        if(condition instanceof this.api.PageStateMatcher || type === 'PageStateMatcher') {
             return new PageStateMatcher({
                 pageUrl: condition.pageUrl,
                 css: condition.css,
