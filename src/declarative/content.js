@@ -32,6 +32,15 @@ export class ChromeDeclarativeContent extends WebExtensionsDeclarativeContent {
 
         // Add rules
         this.api.onPageChanged.addRules(rules, (registeredRules) => {
+            let err = chrome.runtime.lastError;
+
+            if(!IsNil(err)) {
+                // Reject deferred with error
+                deferred.reject(err);
+                return;
+            }
+
+            // Resolve deferred with registered rules
             deferred.resolve(registeredRules);
         });
 
@@ -43,6 +52,15 @@ export class ChromeDeclarativeContent extends WebExtensionsDeclarativeContent {
 
         // Remove rules
         this.api.onPageChanged.removeRules(ruleIdentifiers, () => {
+            let err = chrome.runtime.lastError;
+
+            if(!IsNil(err)) {
+                // Reject deferred with error
+                deferred.reject(err);
+                return;
+            }
+
+            // Resolve deferred
             deferred.resolve();
         });
 
@@ -54,6 +72,15 @@ export class ChromeDeclarativeContent extends WebExtensionsDeclarativeContent {
 
         // Get rules
         this.api.onPageChanged.getRules(ruleIdentifiers, (rules) => {
+            let err = chrome.runtime.lastError;
+
+            if(!IsNil(err)) {
+                // Reject deferred with error
+                deferred.reject(err);
+                return;
+            }
+
+            // Resolve deferred with rules
             deferred.resolve([
                 ...rules.map((rule) => {
                     return {
